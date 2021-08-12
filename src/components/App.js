@@ -3,8 +3,10 @@ import Message from './message'
 
 class App extends React.Component {
   state = {
-    messages: [],
-    users: {}
+    messages: {}, // messageID : message
+    messageIDByTime: [], // index : messageID
+    messageIDBySender: {}, // senderID : messageID[]
+    users: {} // userID : userName
   }
 
   inputRef = React.createRef()
@@ -27,16 +29,28 @@ class App extends React.Component {
 
   sendMessage = (e) => {
     e.preventDefault()
+    const userID = localStorage.getItem('userID')
+    const messageID = userID + Date.now().toString()
 
     const newMessage = {
-      senderName: this.state.users[localStorage.getItem('userID')],
-      timestamp: 'now',
+      senderID: userID,
+      timestamp: new Date().toString(),
       content: this.inputRef.current.value,
-      key: Date.now()
     }
 
+    // store message
+    const messages = {...this.state.messages}
+    messages[messageID] = newMessage 
+
+    // store message by sender
+    const messageIDBySender = {...this.state.messageIDBySender}
+    messageIDBySender[userID] = messageIDBySender[userID] ? [...messageIDBySender[userID], messageID] : [messageID]
+
+
     this.setState({
-      messages: [...this.state.messages, newMessage]
+      messageIDByTime: [...this.state.messageIDByTime, messageID],
+      messageIDBySender: messageIDBySender,
+      messages: messages
     })
     e.target.reset()
   }
@@ -45,14 +59,16 @@ class App extends React.Component {
     return (
       <div className="App">
         <div className="messages">
-          {this.state.messages.map((msg) => (
-            <Message
-              senderName={msg.senderName}
-              timestamp={msg.timestamp}
-              content={msg.content}
-              key={msg.key}
+          {this.state.messageIDByTime.map((messageID) => {
+            const message = this.state.messages[messageID]
+
+            return <Message
+              senderName={this.state.users[message.senderID]}
+              timestamp={message.timestamp}
+              content={message.content}
+              key={messageID}
             />
-          ))}
+          })}
         </div>
 
         <form className="messageInput" onSubmit={this.sendMessage}>
