@@ -9,27 +9,32 @@ class App extends React.Component {
 
   inputRef = React.createRef()
 
-  constructor(props) {
-    super(props)
+  componentDidMount(){
     let userID = localStorage.getItem('userID')
 
     if (!userID) {
-      userID = 'Anonymous' + Date.now().toString()
+      userID = Date.now().toString()
+
+      // Add new user to localstorage 
       localStorage.setItem('userID', userID)
-      const users = { ...this.state.users }
-      users[userID] = userID
-      this.setState({ users: users })
     }
+
+      // Add user to state
+      const users = {...this.state.users}
+      users[userID] = 'Anonymous'+userID
+      this.setState({users: users})
   }
 
   sendMessage = (e) => {
     e.preventDefault()
+
     const newMessage = {
       senderName: this.state.users[localStorage.getItem('userID')],
       timestamp: 'now',
       content: this.inputRef.current.value,
       key: Date.now()
     }
+
     this.setState({
       messages: [...this.state.messages, newMessage]
     })
