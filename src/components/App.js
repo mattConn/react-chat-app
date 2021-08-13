@@ -1,5 +1,6 @@
 import React from 'react'
 import Message from './message'
+import {makeTimestamp} from '../helpers' 
 
 class App extends React.Component {
   state = {
@@ -34,7 +35,7 @@ class App extends React.Component {
 
     const newMessage = {
       senderID: userID,
-      timestamp: new Date().toString(),
+      timestamp: makeTimestamp(),
       content: this.inputRef.current.value,
     }
 
