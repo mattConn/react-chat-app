@@ -35,7 +35,7 @@ class App extends React.Component {
 
     const newMessage = {
       senderID: userID,
-      timestamp: makeTimestamp(),
+      timestamp: makeTimestamp(Date.now()),
       content: this.inputRef.current.value,
     }
 
