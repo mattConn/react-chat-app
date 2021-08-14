@@ -1,18 +1,41 @@
 import React from 'react'
 import Message from './Message'
-import {makeTimestamp} from '../helpers' 
+import {makeDate, makeTime} from '../helpers' 
+import {base} from '../base'
 
 class App extends React.Component {
   state = {
-    messages: {}, // messageID : message
-    messageIDByTime: [], // index : messageID
-    messageIDBySender: {}, // senderID : messageID[]
+    messages: {}, // timestamp : message
+    messageIDBySender: {}, // senderID : timestamp[]
     users: {} // userID : userName
   }
 
   inputRef = React.createRef()
 
   componentDidMount(){
+    this.ref = base.syncState('chatroom',{
+      context: this,
+      state: 'messages' 
+    })
+    
+    const messages = this.state.messages
+    const users = {...this.state.users}
+    const messageIDBySender = {...this.state.messageIDBySender}
+
+    // update state from firebase
+    Object.keys(this.state.messages).forEach((timestamp) => {
+      const message = messages[timestamp]
+
+      users[message.senderID] = message.senderName 
+      messageIDBySender[message.senderID] = timestamp
+    })
+
+    this.setState({
+      users: users,
+      messageIDBySender: messageIDBySender
+    })
+
+
     let userID = localStorage.getItem('userID')
 
     if (!userID) {
@@ -23,36 +46,40 @@ class App extends React.Component {
     }
 
       // Add user to state
-      const users = {...this.state.users}
       users[userID] = 'Anonymous'+userID
       this.setState({users: users})
   }
 
-  sendMessage = (e) => {
-    e.preventDefault()
-    const userID = localStorage.getItem('userID')
-    const messageID = userID + Date.now().toString()
-
+  sendMessage = (senderID, senderName, timestamp, content) => {
     const newMessage = {
-      senderID: userID,
-      timestamp: makeTimestamp(Date.now()),
-      content: this.inputRef.current.value,
+      senderID: senderID,
+      senderName: senderName,
+      content: content,
     }
 
     // store message
     const messages = {...this.state.messages}
-    messages[messageID] = newMessage 
+    messages[timestamp] = newMessage 
 
     // store message by sender
     const messageIDBySender = {...this.state.messageIDBySender}
-    messageIDBySender[userID] = messageIDBySender[userID] ? [...messageIDBySender[userID], messageID] : [messageID]
+    messageIDBySender[senderID] = messageIDBySender[senderID] ? [...messageIDBySender[senderID], timestamp] : [timestamp]
 
 
     this.setState({
-      messageIDByTime: [...this.state.messageIDByTime, messageID],
       messageIDBySender: messageIDBySender,
       messages: messages
     })
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault()
+
+    this.sendMessage(localStorage.getItem('userID'),
+      this.state.users[localStorage.getItem('userID')],
+      Date.now(), 
+      this.inputRef.current.value)
+
     e.target.reset()
   }
 
@@ -60,19 +87,21 @@ class App extends React.Component {
     return (
       <div className="App">
         <div className="messages">
-          {this.state.messageIDByTime.map((messageID) => {
-            const message = this.state.messages[messageID]
+          {Object.keys(this.state.messages).map((key) => {
+            const timestamp = parseInt(key)
+            const message = this.state.messages[timestamp]
 
             return <Message
-              senderName={this.state.users[message.senderID]}
-              timestamp={message.timestamp}
+              senderName={message.senderName}
+              date={makeDate(timestamp)}
+              time={makeTime(timestamp)}
               content={message.content}
-              key={messageID}
+              key={timestamp}
             />
           })}
         </div>
 
-        <form className="messageInput" onSubmit={this.sendMessage}>
+        <form className="messageInput" onSubmit={this.handleSubmit}>
           <input type="text" ref={this.inputRef} required />
           <button type="submit">Send</button>
         </form>

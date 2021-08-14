@@ -5,6 +5,6 @@ import firebaseConfig from './firebaseConfig'
 // Initialize Firebase
 const firebaseApp = Firebase.initializeApp(firebaseConfig);
 
-const base = Rebase.createClass(firebaseApp.databaseURL())
+const base = Rebase.createClass(firebaseApp.database())
 
 export {firebaseApp, base}
