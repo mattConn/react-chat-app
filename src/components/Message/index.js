@@ -1,5 +1,7 @@
 import React from 'react'
 
+import './index.scss';
+
 const Message = (props) => (
     <div className="message" style={{border: "solid 1px"}}>
         <p>{props.senderName}</p>

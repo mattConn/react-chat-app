@@ -1,13 +1,12 @@
 import React from 'react'
-import Message from './Message'
-import { makeDate, makeTime } from '../helpers'
-import { base } from '../base'
+import Message from '../Message'
+import { makeDate, makeTime } from '../../helpers'
+import { base } from '../../base'
+import './index.scss';
 
 class App extends React.Component {
   state = {
     messages: {}, // timestamp : message
-    messageIDBySender: {}, // senderID : timestamp[]
-    users: {} // userID : userName
   }
 
   inputRef = React.createRef()
@@ -16,16 +15,6 @@ class App extends React.Component {
     base.syncState('chatroom', {
       context: this,
       state: 'messages'
-    })
-
-    base.syncState('users', {
-      context: this,
-      state: 'users'
-    })
-
-    base.syncState('messageBySender', {
-      context: this,
-      state: 'messageIDBySender'
     })
 
     let userID = localStorage.getItem('userID')
@@ -54,13 +43,7 @@ class App extends React.Component {
     const messages = { ...this.state.messages }
     messages[timestamp] = newMessage
 
-    // store message by sender
-    const messageIDBySender = { ...this.state.messageIDBySender }
-    messageIDBySender[senderID] = messageIDBySender[senderID] ? [...messageIDBySender[senderID], timestamp] : [timestamp]
-
-
     this.setState({
-      messageIDBySender: messageIDBySender,
       messages: messages
     })
   }
@@ -94,13 +77,6 @@ class App extends React.Component {
           })}
         </div>
 
-        <div>
-          {
-            Object.keys(this.state.users).map(key => (
-              <p>{this.state.users[key]}</p>
-            ))
-          }
-        </div>
         <form className="messageInput" onSubmit={this.handleSubmit}>
           <input type="text" ref={this.inputRef} required />
           <button type="submit">Send</button>
