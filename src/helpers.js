@@ -3,7 +3,7 @@ const makeDate = (epoch) => {
 
 	const month = (date.getMonth()+1).toString()
 	const day = date.getDate().toString()
-	const year = date.getFullYear().toString()
+	const year = date.getFullYear().toString().slice(2)
 
 	return `${month}/${day}/${year}` 
 }

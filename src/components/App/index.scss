@@ -1,3 +1,11 @@
+@import '../../styles/variables';
+@import '../../styles/global';
+
 .App {
-    background-color: red;
+    display: block;
+    width: 100%;
+    
+    p {
+        margin: 0;
+    }
 }

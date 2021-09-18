@@ -1,0 +1,17 @@
+@import './variables';
+
+// Borders
+@mixin border-defaults {
+    border-radius: 5px;
+    border: solid $medium-blue;
+}
+
+@mixin light-border {
+    @include border-defaults;
+    border-width: 1px;
+}
+
+@mixin heavy-border {
+    @include border-defaults;
+    border-width: 2px;
+}

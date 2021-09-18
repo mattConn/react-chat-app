@@ -1,3 +1,27 @@
+@import '../../styles/variables';
+@import '../../styles/fonts';
+@import '../../styles/mixins';
+
 .message {
-    background-color: green;
+    @include heavy-border;
+    width: 100%;
+    padding: $small-padding;
+    margin: $small-margin 0;
+    font-family: $sans-serif;
+    font-size: $body-copy;
+
+    .nameAndTimestamp {
+        margin-bottom: $small-margin;
+
+        .dateAndTime {
+            font-size: $very-small;
+            .date, .time {
+                display: inline;
+            }
+
+            .at {
+                margin: 0 $tiny-margin;
+            }
+        }
+    }
 };
