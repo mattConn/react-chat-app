@@ -1,9 +1,11 @@
 import React from 'react'
 
+import './index.scss';
+
 const Message = (props) => (
     <div className="message" style={{border: "solid 1px"}}>
         <p>{props.senderName}</p>
-        <p>{props.timestamp}</p>
+        <p>{props.date} {props.time}</p>
         <p>{props.content}</p>
     </div>
 )
